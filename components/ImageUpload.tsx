@@ -8,8 +8,10 @@ import {
   NativeSelect,
   Textarea,
 } from "@mantine/core";
-import { User, useSupabaseClient } from "@supabase/auth-helpers-react";
+import { showNotification, updateNotification } from "@mantine/notifications";
+import { IconCheck, IconX } from "@tabler/icons";
 
+import { User, useSupabaseClient } from "@supabase/auth-helpers-react";
 import Compressor from "compressorjs";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
@@ -22,6 +24,8 @@ type FormData = {
 
 const ImageUpload: FC<{ user: User }> = ({ user }) => {
   const [opened, setOpened] = useState(false);
+  const [userUpload, setUserUpload] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const supabase = useSupabaseClient();
 
   const form = useForm({
@@ -42,22 +46,31 @@ const ImageUpload: FC<{ user: User }> = ({ user }) => {
     };
 
     if (values.image !== null) {
+      setIsLoading(true);
+      showNotification({
+        id: "user-upload",
+        loading: true,
+        title: "Uploading...",
+        message: `This won't take too long.`,
+        autoClose: false,
+        disallowClose: true,
+      });
       switch (values.compression) {
         case "clientSideCompression":
           new Compressor(values.image, {
             quality: 0.5,
             mimeType: "image/jpeg",
             success: async (compressed) => {
-              const { data } = await supabase.storage
+              const { data: image } = await supabase.storage
                 .from("images")
                 .upload(imagePath, compressed);
-              if (data?.path !== undefined) {
-                newImageUpload.image_bucket_path = data.path;
-                const res = await axios.post(
+              if (image?.path !== undefined) {
+                newImageUpload.image_bucket_path = image.path;
+                const { data: userUpload } = await axios.post(
                   "/api/user-upload",
                   newImageUpload
                 );
-                console.log(res);
+                setUserUpload(userUpload);
               }
             },
           });
@@ -69,8 +82,11 @@ const ImageUpload: FC<{ user: User }> = ({ user }) => {
           });
           if (data?.path !== undefined) {
             newImageUpload.image_bucket_path = data.path;
-            const res = await axios.post("/api/user-upload", newImageUpload);
-            console.log(res);
+            const { data: userUpload } = await axios.post(
+              "/api/user-upload",
+              newImageUpload
+            );
+            setUserUpload(userUpload);
           }
           break;
 
@@ -82,8 +98,11 @@ const ImageUpload: FC<{ user: User }> = ({ user }) => {
 
             if (data?.path !== undefined) {
               newImageUpload.image_bucket_path = data.path;
-              const res = await axios.post("/api/user-upload", newImageUpload);
-              console.log(res);
+              const { data: userUpload } = await axios.post(
+                "/api/user-upload",
+                newImageUpload
+              );
+              setUserUpload(userUpload);
             }
           } catch (error) {
             console.log(error);
@@ -94,6 +113,25 @@ const ImageUpload: FC<{ user: User }> = ({ user }) => {
           break;
       }
     }
+
+    setIsLoading(false);
+    userUpload
+      ? updateNotification({
+          id: "user-upload",
+          title: "Upload successful.",
+          message: `Thank you for waiting.`,
+          color: "teal",
+          icon: <IconCheck size={16} />,
+          autoClose: 2000,
+        })
+      : updateNotification({
+          id: "user-upload",
+          title: "Sorry, there was a problem.",
+          message: "Please try again later",
+          color: "red",
+          icon: <IconX size={16} />,
+          autoClose: 2000,
+        });
   };
 
   return (
@@ -112,10 +150,12 @@ const ImageUpload: FC<{ user: User }> = ({ user }) => {
             withAsterisk
             accept="image/*"
             {...form.getInputProps("image")}
+            disabled={isLoading}
           />
           <Textarea
             label="Image Caption"
             {...form.getInputProps("description")}
+            disabled={isLoading}
           />
           <NativeSelect
             data={[
@@ -132,8 +172,9 @@ const ImageUpload: FC<{ user: User }> = ({ user }) => {
             label="Image Compression"
             withAsterisk
             {...form.getInputProps("compression")}
+            disabled={isLoading}
           />
-          <Button mt="sm" type="submit">
+          <Button mt="sm" type="submit" disabled={isLoading}>
             Upload
           </Button>
         </form>
