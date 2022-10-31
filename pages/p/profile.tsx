@@ -6,6 +6,8 @@ import { Container } from "@mantine/core";
 import { User } from "@supabase/supabase-js";
 import { withPageAuth } from "@supabase/auth-helpers-nextjs";
 
+import ImageUpload from "../../components/ImageUpload";
+
 const Profile: NextPage<{ user: User }> = ({ user }) => {
   return (
     <Container>
@@ -16,7 +18,8 @@ const Profile: NextPage<{ user: User }> = ({ user }) => {
       </Head>
 
       <main>
-        <h1>{user.email}</h1>
+        <h1>Welcome, {user.email}</h1>
+        <ImageUpload user={user} />
       </main>
 
       <footer></footer>
@@ -32,7 +35,6 @@ export const getServerSideProps = withPageAuth({
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    console.log(user);
     return {
       props: { user: user },
     };
