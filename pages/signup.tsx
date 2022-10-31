@@ -1,8 +1,8 @@
 import Head from "next/head";
 import { Container, Stack, Text } from "@mantine/core";
-import SigninPage from "../components/SigninPage";
+import SignupPage from "../components/SignupPage";
 
-export default function SignIn() {
+export default function SignUp() {
   return (
     <Container>
       <Head>
@@ -14,9 +14,9 @@ export default function SignIn() {
       <main>
         <Stack style={{ height: "100vh" }} align="center" justify="center">
           <Text weight={700} size="xl">
-            Sign In
+            Sign Up
           </Text>
-          <SigninPage />
+          <SignupPage />
         </Stack>
       </main>
 

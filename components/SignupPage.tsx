@@ -8,7 +8,7 @@ type FormData = {
   password: string;
 };
 
-export default function SigninPage() {
+export default function SignupPage() {
   const supabase = useSupabaseClient();
   const router = useRouter();
 
@@ -26,9 +26,9 @@ export default function SigninPage() {
   });
 
   const addUser = async (values: FormData) => {
-    const { data, error } = await supabase.auth.signInWithPassword(values);
+    const { data, error } = await supabase.auth.signUp(values);
     if (data.user !== null) {
-      router.push("/p/profile");
+      router.push("/signin");
     } else {
       console.log(error);
     }
