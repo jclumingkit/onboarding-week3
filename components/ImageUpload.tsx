@@ -12,6 +12,7 @@ import { User, useSupabaseClient } from "@supabase/auth-helpers-react";
 
 import Compressor from "compressorjs";
 import { v4 as uuidv4 } from "uuid";
+import axios from "axios";
 
 type FormData = {
   image: File | null;
@@ -52,33 +53,27 @@ const ImageUpload: FC<{ user: User }> = ({ user }) => {
                 .upload(imagePath, compressed);
               if (data?.path !== undefined) {
                 newImageUpload.image_bucket_path = data.path;
-              }
-              try {
-                const { data } = await supabase
-                  .from("user_uploads")
-                  .insert(newImageUpload)
-                  .select();
-                console.log(data);
-              } catch (error) {
-                console.log(error);
+                const res = await axios.post(
+                  "/api/user-upload",
+                  newImageUpload
+                );
+                console.log(res);
               }
             },
           });
-
           break;
+
         case "serverSideCompression":
           const { data } = await supabase.functions.invoke("imageCompressor", {
             body: values.image,
           });
           if (data?.path !== undefined) {
             newImageUpload.image_bucket_path = data.path;
+            const res = await axios.post("/api/user-upload", newImageUpload);
+            console.log(res);
           }
-          const res = await supabase
-            .from("user_uploads")
-            .insert(newImageUpload)
-            .select();
-          console.log(res);
           break;
+
         case "raw":
           try {
             const { data } = await supabase.storage
@@ -87,12 +82,9 @@ const ImageUpload: FC<{ user: User }> = ({ user }) => {
 
             if (data?.path !== undefined) {
               newImageUpload.image_bucket_path = data.path;
+              const res = await axios.post("/api/user-upload", newImageUpload);
+              console.log(res);
             }
-            const res = await supabase
-              .from("user_uploads")
-              .insert(newImageUpload)
-              .select();
-            console.log(res);
           } catch (error) {
             console.log(error);
           }
