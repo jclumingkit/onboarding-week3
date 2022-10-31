@@ -3,6 +3,8 @@ import { useForm } from "@mantine/form";
 import { TextInput, PasswordInput, Button, Group, Box } from "@mantine/core";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 
+import { setCookie } from "cookies-next";
+
 type FormData = {
   email: string;
   password: string;
@@ -28,6 +30,7 @@ export default function SigninPage() {
   const addUser = async (values: FormData) => {
     const { data, error } = await supabase.auth.signInWithPassword(values);
     if (data.user !== null) {
+      setCookie("current_user", data.user.id);
       router.push("/p/profile");
     } else {
       console.log(error);

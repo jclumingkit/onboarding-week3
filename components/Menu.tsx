@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 
 import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
+import { deleteCookie } from "cookies-next";
 
 export default function Menu() {
   const session = useSession();
@@ -11,9 +12,10 @@ export default function Menu() {
 
   const handleSignOut = async () => {
     const { error } = await supabase.auth.signOut();
-    console.log(error);
-
-    router.push("/signin");
+    if (!error) {
+      deleteCookie("current_user");
+      router.push("/signin");
+    }
   };
 
   return (

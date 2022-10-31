@@ -9,11 +9,10 @@ export default async function handler(
 
   if (req.method === "POST") {
     const newImageUpload = req.body;
-    const { data: userUpload } = await supabase
+    const { error } = await supabase
       .from("user_uploads")
-      .insert(newImageUpload)
-      .select();
-    res.status(200).json(userUpload);
+      .insert(newImageUpload);
+    res.status(200).json(error);
   } else {
     res.setHeader("Allow", ["POST"]);
     res
