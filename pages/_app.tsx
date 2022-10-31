@@ -11,7 +11,7 @@ import {
 } from "@supabase/auth-helpers-react";
 import { useRouter } from "next/router";
 
-import { AppShell, Header } from "@mantine/core";
+import { AppShell } from "@mantine/core";
 import { NotificationsProvider } from "@mantine/notifications";
 
 import Menu from "../components/Menu";
@@ -29,14 +29,7 @@ export default function App({
       initialSession={pageProps.initialSession}
     >
       <NotificationsProvider>
-        <AppShell
-          padding="md"
-          header={
-            <Header height={60} p="xs">
-              <Menu />
-            </Header>
-          }
-        >
+        <AppShell padding="md" header={<Menu />}>
           {router.pathname.includes("/p/") ? (
             <AuthProvider>
               <Component {...pageProps} />
@@ -57,7 +50,7 @@ function AuthProvider({ children }: { children: JSX.Element }) {
   if (!router.isReady) return null;
 
   if (!user) {
-    router.push("/signup");
+    router.push("/signin");
     return null;
   }
 

@@ -1,8 +1,7 @@
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { useRouter } from "next/router";
 import { useForm } from "@mantine/form";
 import { TextInput, PasswordInput, Button, Group, Box } from "@mantine/core";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
-
 import { setCookie } from "cookies-next";
 
 type FormData = {
@@ -29,11 +28,10 @@ export default function SigninPage() {
 
   const addUser = async (values: FormData) => {
     const { data, error } = await supabase.auth.signInWithPassword(values);
+    console.log(error);
     if (data.user !== null) {
       setCookie("current_user", data.user.id);
       router.push("/p/profile");
-    } else {
-      console.log(error);
     }
   };
 
