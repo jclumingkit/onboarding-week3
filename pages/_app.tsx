@@ -10,7 +10,9 @@ import {
   useUser,
 } from "@supabase/auth-helpers-react";
 import { useRouter } from "next/router";
+
 import { AppShell, Header } from "@mantine/core";
+import { NotificationsProvider } from "@mantine/notifications";
 
 import Menu from "../components/Menu";
 
@@ -26,22 +28,24 @@ export default function App({
       supabaseClient={supabaseClient}
       initialSession={pageProps.initialSession}
     >
-      <AppShell
-        padding="md"
-        header={
-          <Header height={60} p="xs">
-            <Menu />
-          </Header>
-        }
-      >
-        {router.pathname.includes("/p/") ? (
-          <AuthProvider>
+      <NotificationsProvider>
+        <AppShell
+          padding="md"
+          header={
+            <Header height={60} p="xs">
+              <Menu />
+            </Header>
+          }
+        >
+          {router.pathname.includes("/p/") ? (
+            <AuthProvider>
+              <Component {...pageProps} />
+            </AuthProvider>
+          ) : (
             <Component {...pageProps} />
-          </AuthProvider>
-        ) : (
-          <Component {...pageProps} />
-        )}
-      </AppShell>
+          )}
+        </AppShell>
+      </NotificationsProvider>
     </SessionContextProvider>
   );
 }
