@@ -7,7 +7,6 @@ import { User } from "@supabase/supabase-js";
 import { withPageAuth } from "@supabase/auth-helpers-nextjs";
 
 const Profile: NextPage<{ user: User }> = ({ user }) => {
-  console.log(user);
   return (
     <Container>
       <Head key={"account-page"}>
