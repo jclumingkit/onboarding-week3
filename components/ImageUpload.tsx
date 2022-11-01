@@ -166,7 +166,7 @@ const ImageUpload: FC<{ user: User }> = ({ user }) => {
       </Modal>
 
       <Group position="center">
-        <Button onClick={() => setOpened(true)}>Open Modal</Button>
+        <Button onClick={() => setOpened(true)}>Start a post</Button>
       </Group>
     </>
   );
