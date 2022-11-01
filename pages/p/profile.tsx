@@ -7,6 +7,7 @@ import { User } from "@supabase/supabase-js";
 import { withPageAuth } from "@supabase/auth-helpers-nextjs";
 
 import ImageUpload from "../../components/ImageUpload";
+import PeerReviewForm from "../../components/PeerReviewForm";
 
 const Profile: NextPage<{ user: User }> = ({ user }) => {
   return (
@@ -20,6 +21,7 @@ const Profile: NextPage<{ user: User }> = ({ user }) => {
       <main>
         <h1>Welcome, {user.email}</h1>
         <ImageUpload user={user} />
+        <PeerReviewForm userId={user.id} />
       </main>
 
       <footer></footer>

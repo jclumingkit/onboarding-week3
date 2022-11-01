@@ -8,11 +8,9 @@ export default async function handler(
   const supabase = createServerSupabaseClient({ req, res });
 
   if (req.method === "POST") {
-    const newImageUpload = req.body;
-    const { error } = await supabase
-      .from("user_uploads")
-      .insert(newImageUpload);
-    res.status(200).json(error);
+    const review = req.body;
+    const { error } = await supabase.from("peer_reviews").insert(review);
+    res.status(200).json({ error: error });
   } else {
     res.setHeader("Allow", ["POST"]);
     res

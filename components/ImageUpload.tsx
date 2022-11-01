@@ -6,15 +6,15 @@ import {
   Group,
   FileInput,
   NativeSelect,
+  LoadingOverlay,
   Textarea,
 } from "@mantine/core";
-import { showNotification, updateNotification } from "@mantine/notifications";
-import { IconCheck, IconX } from "@tabler/icons";
 
 import { User, useSupabaseClient } from "@supabase/auth-helpers-react";
 import Compressor from "compressorjs";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
+import { showNotification } from "@mantine/notifications";
 
 type FormData = {
   image: File | null;
@@ -24,8 +24,8 @@ type FormData = {
 
 const ImageUpload: FC<{ user: User }> = ({ user }) => {
   const [opened, setOpened] = useState(false);
-  const [userUpload, setUserUpload] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [uploadError, setUploadError] = useState(null);
   const supabase = useSupabaseClient();
 
   const form = useForm({
@@ -47,14 +47,6 @@ const ImageUpload: FC<{ user: User }> = ({ user }) => {
 
     if (values.image !== null) {
       setIsLoading(true);
-      showNotification({
-        id: "user-upload",
-        loading: true,
-        title: "Uploading...",
-        message: `This won't take too long.`,
-        autoClose: false,
-        disallowClose: true,
-      });
       switch (values.compression) {
         case "clientSideCompression":
           new Compressor(values.image, {
@@ -66,11 +58,11 @@ const ImageUpload: FC<{ user: User }> = ({ user }) => {
                 .upload(imagePath, compressed);
               if (image?.path !== undefined) {
                 newImageUpload.image_bucket_path = image.path;
-                const { data: userUpload } = await axios.post(
+                const { data: error } = await axios.post(
                   "/api/user-upload",
                   newImageUpload
                 );
-                setUserUpload(userUpload);
+                setUploadError(error);
               }
             },
           });
@@ -82,11 +74,11 @@ const ImageUpload: FC<{ user: User }> = ({ user }) => {
           });
           if (data?.path !== undefined) {
             newImageUpload.image_bucket_path = data.path;
-            const { data: userUpload } = await axios.post(
+            const { data: error } = await axios.post(
               "/api/user-upload",
               newImageUpload
             );
-            setUserUpload(userUpload);
+            setUploadError(error);
           }
           break;
 
@@ -98,11 +90,11 @@ const ImageUpload: FC<{ user: User }> = ({ user }) => {
 
             if (data?.path !== undefined) {
               newImageUpload.image_bucket_path = data.path;
-              const { data: userUpload } = await axios.post(
+              const { data: error } = await axios.post(
                 "/api/user-upload",
                 newImageUpload
               );
-              setUserUpload(userUpload);
+              setUploadError(error);
             }
           } catch (error) {
             console.log(error);
@@ -115,22 +107,17 @@ const ImageUpload: FC<{ user: User }> = ({ user }) => {
     }
 
     setIsLoading(false);
-    userUpload
-      ? updateNotification({
-          id: "user-upload",
-          title: "Upload successful.",
-          message: `Thank you for waiting.`,
-          color: "teal",
-          icon: <IconCheck size={16} />,
-          autoClose: 2000,
+
+    !uploadError
+      ? showNotification({
+          title: "Upload successful",
+          message: "Your post has been saved.",
+          color: "green",
         })
-      : updateNotification({
-          id: "user-upload",
-          title: "Sorry, there was a problem.",
-          message: "Please try again later",
+      : showNotification({
+          title: "Upload error",
+          message: "Please try again later.",
           color: "red",
-          icon: <IconX size={16} />,
-          autoClose: 2000,
         });
   };
 
@@ -140,8 +127,9 @@ const ImageUpload: FC<{ user: User }> = ({ user }) => {
         centered
         opened={opened}
         onClose={() => setOpened(false)}
-        title="Introduce yourself!"
+        title="Start a post"
       >
+        <LoadingOverlay visible={isLoading} overlayBlur={1} />
         <form onSubmit={form.onSubmit(handleImageUpload)}>
           <FileInput
             placeholder="avatar.jpg"
@@ -150,12 +138,10 @@ const ImageUpload: FC<{ user: User }> = ({ user }) => {
             withAsterisk
             accept="image/*"
             {...form.getInputProps("image")}
-            disabled={isLoading}
           />
           <Textarea
             label="Image Caption"
             {...form.getInputProps("description")}
-            disabled={isLoading}
           />
           <NativeSelect
             data={[
@@ -172,9 +158,8 @@ const ImageUpload: FC<{ user: User }> = ({ user }) => {
             label="Image Compression"
             withAsterisk
             {...form.getInputProps("compression")}
-            disabled={isLoading}
           />
-          <Button mt="sm" type="submit" disabled={isLoading}>
+          <Button mt="sm" type="submit">
             Upload
           </Button>
         </form>
