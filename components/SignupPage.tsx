@@ -28,6 +28,12 @@ export default function SignupPage() {
   const addUser = async (values: FormData) => {
     const { data, error } = await supabase.auth.signUp(values);
     if (data.user !== null) {
+      const { error } = await supabase.from("user_profiles").insert({
+        id: data.user.id,
+        username: data.user.email,
+        email: data.user.email,
+      });
+      console.log(error);
       router.push("/signin");
     } else {
       console.log(error);

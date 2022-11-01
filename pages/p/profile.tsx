@@ -8,6 +8,8 @@ import { withPageAuth } from "@supabase/auth-helpers-nextjs";
 
 import ImageUpload from "../../components/ImageUpload";
 import UserList from "../../components/UserList";
+import KeywordSearchImageUpload from "../../components/KeywordSearchImageUpload";
+import KeywordSearchPeerReview from "../../components/KeywordSearchPeerReview";
 
 import { Profile } from "../../types/TProfile";
 
@@ -25,6 +27,8 @@ const Profile: NextPage<{ user: User; profileList: Profile[] }> = ({
 
       <main>
         <h1>Welcome, {user.email}</h1>
+        <KeywordSearchImageUpload userId={user.id} />
+        <KeywordSearchPeerReview userId={user.id} />
         <ImageUpload user={user} />
         <UserList profileList={profileList} userId={user.id} />
       </main>
@@ -45,7 +49,8 @@ export const getServerSideProps = withPageAuth({
 
     const { data: user_profiles } = await supabase
       .from("user_profiles")
-      .select("*");
+      .select()
+      .neq("id", user?.id);
 
     return {
       props: { user: user, profileList: user_profiles },
