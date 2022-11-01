@@ -30,10 +30,13 @@ type FormData = {
   };
 };
 
-const PeerReviewForm: FC<{ userId: string }> = ({ userId }) => {
+const PeerReviewForm: FC<{ userId: string; username: string }> = ({
+  userId,
+  username,
+}) => {
   const form = useForm({
     initialValues: {
-      name: "",
+      name: username,
       required_rating: {
         presentation_score: {
           score: 0,
@@ -91,8 +94,8 @@ const PeerReviewForm: FC<{ userId: string }> = ({ userId }) => {
       <TextInput
         withAsterisk
         label="Name"
-        placeholder="John Doe"
         {...form.getInputProps("name")}
+        readOnly
       />
       <Group>
         <Text>Presentation</Text>
