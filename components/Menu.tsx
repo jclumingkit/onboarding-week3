@@ -1,4 +1,4 @@
-import { Center, NavLink } from "@mantine/core";
+import { Navbar, NavLink } from "@mantine/core";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
@@ -19,7 +19,12 @@ export default function Menu() {
   };
 
   return (
-    <Center>
+    <Navbar
+      width={{ base: 300 }}
+      p="xs"
+      styles={{ backgroundColor: "red" }}
+      withBorder
+    >
       {!session ? (
         <>
           <Link href="/signin" passHref>
@@ -37,9 +42,15 @@ export default function Menu() {
               active={router.pathname === "/p/profile"}
             />
           </Link>
+          <Link href="/p/gallery" passHref>
+            <NavLink
+              label="Gallery"
+              active={router.pathname === "/p/gallery"}
+            />
+          </Link>
           <NavLink label="Logout" onClick={() => handleSignOut()} />
         </>
       )}
-    </Center>
+    </Navbar>
   );
 }

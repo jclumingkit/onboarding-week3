@@ -1,20 +1,23 @@
 import { NextPage } from "next";
-
 import Head from "next/head";
-import { Container } from "@mantine/core";
+
+import { Container, Tabs } from "@mantine/core";
+import { IconPhoto, IconMessageCircle, IconSettings } from "@tabler/icons";
 
 import { User } from "@supabase/supabase-js";
 import { withPageAuth } from "@supabase/auth-helpers-nextjs";
 
 import ImageUpload from "../../components/ImageUpload";
 import UserList from "../../components/UserList";
+import KeywordSearchImageUpload from "../../components/KeywordSearchImageUpload";
+import ApiCallTable from "../../components/ApiCallTable";
 
 import { Profile } from "../../types/TProfile";
 
-const Profile: NextPage<{ user: User; profileList: Profile[] }> = ({
-  user,
-  profileList,
-}) => {
+const Profile: NextPage<{
+  user: User;
+  profileList: Profile[];
+}> = ({ user, profileList }) => {
   return (
     <Container>
       <Head key={"account-page"}>
@@ -24,9 +27,37 @@ const Profile: NextPage<{ user: User; profileList: Profile[] }> = ({
       </Head>
 
       <main>
-        <h1>Welcome, {user.email}</h1>
-        <ImageUpload user={user} />
-        <UserList profileList={profileList} userId={user.id} />
+        <Tabs defaultValue="gallery">
+          <Tabs.List>
+            <Tabs.Tab value="gallery" icon={<IconPhoto size={14} />}>
+              Upload Photo
+            </Tabs.Tab>
+            <Tabs.Tab value="apiCallsTable" icon={<IconSettings size={14} />}>
+              Api Calls
+            </Tabs.Tab>
+            <Tabs.Tab value="peerReview" icon={<IconMessageCircle size={14} />}>
+              Peer Review
+            </Tabs.Tab>
+            <Tabs.Tab value="keywordAnalysis" icon={<IconSettings size={14} />}>
+              Keyword Analysis
+            </Tabs.Tab>
+          </Tabs.List>
+
+          <Tabs.Panel value="gallery" pt="xs">
+            <ImageUpload user={user} />
+          </Tabs.Panel>
+          <Tabs.Panel value="apiCallsTable" pt="xs">
+            <ApiCallTable />
+          </Tabs.Panel>
+
+          <Tabs.Panel value="peerReview" pt="xs">
+            <UserList profileList={profileList} userId={user.id} />
+          </Tabs.Panel>
+
+          <Tabs.Panel value="keywordAnalysis" pt="xs">
+            <KeywordSearchImageUpload userId={user.id} />
+          </Tabs.Panel>
+        </Tabs>
       </main>
 
       <footer></footer>
@@ -45,10 +76,14 @@ export const getServerSideProps = withPageAuth({
 
     const { data: user_profiles } = await supabase
       .from("user_profiles")
-      .select("*");
+      .select("*")
+      .neq("id", user?.id);
 
     return {
-      props: { user: user, profileList: user_profiles },
+      props: {
+        user: user,
+        profileList: user_profiles,
+      },
     };
   },
 });

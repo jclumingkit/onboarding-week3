@@ -1,9 +1,7 @@
 import { FC, useState } from "react";
 import { useForm } from "@mantine/form";
 import {
-  Modal,
   Button,
-  Group,
   FileInput,
   NativeSelect,
   LoadingOverlay,
@@ -23,7 +21,6 @@ type FormData = {
 };
 
 const ImageUpload: FC<{ user: User }> = ({ user }) => {
-  const [opened, setOpened] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [uploadError, setUploadError] = useState(null);
   const supabase = useSupabaseClient();
@@ -53,30 +50,50 @@ const ImageUpload: FC<{ user: User }> = ({ user }) => {
             quality: 0.5,
             mimeType: "image/jpeg",
             success: async (compressed) => {
-              const { data: image } = await supabase.storage
+              const { data: clientSideImage } = await supabase.storage
                 .from("images")
                 .upload(imagePath, compressed);
-              if (image?.path !== undefined) {
-                newImageUpload.image_bucket_path = image.path;
-                const { data: error } = await axios.post(
+              if (clientSideImage?.path !== undefined) {
+                const { data } = supabase.storage
+                  .from("images")
+                  .getPublicUrl(imagePath);
+
+                const finalImageData = {
+                  ...newImageUpload,
+                  image_bucket_path: data.publicUrl,
+                };
+
+                const { data: clientSideError } = await axios.post(
                   "/api/user-upload",
-                  newImageUpload
+                  finalImageData
                 );
-                setUploadError(error);
+                setUploadError(clientSideError);
               }
             },
           });
           break;
 
         case "serverSideCompression":
-          const { data } = await supabase.functions.invoke("imageCompressor", {
-            body: values.image,
-          });
-          if (data?.path !== undefined) {
-            newImageUpload.image_bucket_path = data.path;
+          const { data: serverSideImage } = await supabase.functions.invoke(
+            "imageCompressor",
+            {
+              body: values.image,
+            }
+          );
+          console.log(serverSideImage);
+          if (serverSideImage?.path !== undefined) {
+            const { data } = supabase.storage
+              .from("images")
+              .getPublicUrl(serverSideImage?.path);
+
+            const finalImageData = {
+              ...newImageUpload,
+              image_bucket_path: data.publicUrl,
+            };
+
             const { data: error } = await axios.post(
               "/api/user-upload",
-              newImageUpload
+              finalImageData
             );
             setUploadError(error);
           }
@@ -84,15 +101,23 @@ const ImageUpload: FC<{ user: User }> = ({ user }) => {
 
         case "raw":
           try {
-            const { data } = await supabase.storage
+            const { data: notCompressedImage } = await supabase.storage
               .from("images")
               .upload(imagePath, values.image);
 
-            if (data?.path !== undefined) {
-              newImageUpload.image_bucket_path = data.path;
+            if (notCompressedImage?.path !== undefined) {
+              const { data } = supabase.storage
+                .from("images")
+                .getPublicUrl(imagePath);
+
+              const finalImageData = {
+                ...newImageUpload,
+                image_bucket_path: data.publicUrl,
+              };
+
               const { data: error } = await axios.post(
                 "/api/user-upload",
-                newImageUpload
+                finalImageData
               );
               setUploadError(error);
             }
@@ -123,51 +148,40 @@ const ImageUpload: FC<{ user: User }> = ({ user }) => {
 
   return (
     <>
-      <Modal
-        centered
-        opened={opened}
-        onClose={() => setOpened(false)}
-        title="Start a post"
-      >
-        <LoadingOverlay visible={isLoading} overlayBlur={1} />
-        <form onSubmit={form.onSubmit(handleImageUpload)}>
-          <FileInput
-            placeholder="avatar.jpg"
-            label="Your Avatar"
-            variant="filled"
-            withAsterisk
-            accept="image/*"
-            {...form.getInputProps("image")}
-          />
-          <Textarea
-            label="Image Caption"
-            {...form.getInputProps("description")}
-          />
-          <NativeSelect
-            data={[
-              {
-                value: "clientSideCompression",
-                label: "Client-Side Compression",
-              },
-              {
-                value: "serverSideCompression",
-                label: "Server-Side Compression",
-              },
-              { value: "raw", label: "Raw (No Compression)" },
-            ]}
-            label="Image Compression"
-            withAsterisk
-            {...form.getInputProps("compression")}
-          />
-          <Button mt="sm" type="submit">
-            Upload
-          </Button>
-        </form>
-      </Modal>
-
-      <Group position="center">
-        <Button onClick={() => setOpened(true)}>Start a post</Button>
-      </Group>
+      <LoadingOverlay visible={isLoading} overlayBlur={1} />
+      <form onSubmit={form.onSubmit(handleImageUpload)}>
+        <FileInput
+          placeholder="avatar.jpg"
+          label="Your Image"
+          variant="filled"
+          withAsterisk
+          accept="image/*"
+          {...form.getInputProps("image")}
+        />
+        <Textarea
+          label="Image Caption"
+          {...form.getInputProps("description")}
+        />
+        <NativeSelect
+          data={[
+            {
+              value: "clientSideCompression",
+              label: "Client-Side Compression",
+            },
+            {
+              value: "serverSideCompression",
+              label: "Server-Side Compression",
+            },
+            { value: "raw", label: "Raw (No Compression)" },
+          ]}
+          label="Image Compression"
+          withAsterisk
+          {...form.getInputProps("compression")}
+        />
+        <Button mt="sm" type="submit">
+          Upload
+        </Button>
+      </form>
     </>
   );
 };

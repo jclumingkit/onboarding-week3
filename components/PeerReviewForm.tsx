@@ -1,34 +1,10 @@
 import { FC } from "react";
 import { useForm } from "@mantine/form";
-import { Button, Group, TextInput, Text, NumberInput } from "@mantine/core";
+import { Button, TextInput, Text, NumberInput, Stack } from "@mantine/core";
 
 import axios from "axios";
-// import { showNotification } from "@mantine/notifications";
-
-type FormData = {
-  name: string;
-  required_rating: {
-    presentation_score: {
-      score: number;
-      comment: string;
-    };
-    technical_score: {
-      score: number;
-      comment: string;
-    };
-    assists_peers_score: {
-      score: number;
-      comment: string;
-    };
-    documentation_score: {
-      score: number;
-      comment: string;
-    };
-  };
-  optional_rating: {
-    stood_out: string;
-  };
-};
+import { showNotification } from "@mantine/notifications";
+import { FormData } from "../types/TPeerReviewForm";
 
 const PeerReviewForm: FC<{ userId: string; username: string }> = ({
   userId,
@@ -86,7 +62,13 @@ const PeerReviewForm: FC<{ userId: string; username: string }> = ({
   const handlePeerReview = async (values: FormData) => {
     const review = { ...values, submitted_by: userId };
     const result = await axios.post("/api/peer-review", review);
-    console.log(result);
+    if (!result.data.error) {
+      showNotification({
+        title: "Feedback submitted",
+        message: "Thanks for providing feedback.",
+        color: "green",
+      });
+    }
   };
 
   return (
@@ -97,8 +79,10 @@ const PeerReviewForm: FC<{ userId: string; username: string }> = ({
         {...form.getInputProps("name")}
         readOnly
       />
-      <Group>
-        <Text>Presentation</Text>
+      <Stack>
+        <Text align="center" weight={600} mt="md">
+          Presentation
+        </Text>
         <NumberInput
           withAsterisk
           label="Score"
@@ -112,9 +96,11 @@ const PeerReviewForm: FC<{ userId: string; username: string }> = ({
           label="Comment"
           {...form.getInputProps("required_rating.presentation_score.comment")}
         />
-      </Group>
-      <Group>
-        <Text>Techinical</Text>
+      </Stack>
+      <Stack>
+        <Text align="center" weight={600} mt="md">
+          Technical
+        </Text>
         <NumberInput
           withAsterisk
           label="Score"
@@ -128,9 +114,11 @@ const PeerReviewForm: FC<{ userId: string; username: string }> = ({
           label="Comment"
           {...form.getInputProps("required_rating.technical_score.comment")}
         />
-      </Group>
-      <Group>
-        <Text>Assists Peers</Text>
+      </Stack>
+      <Stack>
+        <Text align="center" weight={600} mt="md">
+          Assists Peers
+        </Text>
         <NumberInput
           withAsterisk
           label="Score"
@@ -144,9 +132,11 @@ const PeerReviewForm: FC<{ userId: string; username: string }> = ({
           label="Comment"
           {...form.getInputProps("required_rating.assists_peers_score.comment")}
         />
-      </Group>
-      <Group>
-        <Text>Documentation</Text>
+      </Stack>
+      <Stack>
+        <Text align="center" weight={600} mt="md">
+          Documentation
+        </Text>
         <NumberInput
           withAsterisk
           label="Score"
@@ -160,14 +150,16 @@ const PeerReviewForm: FC<{ userId: string; username: string }> = ({
           label="Comment"
           {...form.getInputProps("required_rating.documentation_score.comment")}
         />
-      </Group>
-      <Group>
-        <Text>Stood Out At: </Text>
-        <TextInput
-          label="Comment"
-          {...form.getInputProps("optional_rating.stood_out")}
-        />
-      </Group>
+      </Stack>
+      <Stack>
+        <Text align="center" weight={600} mt="md">
+          Additional Feedback
+          <TextInput
+            label="Comment"
+            {...form.getInputProps("optional_rating.stood_out")}
+          />
+        </Text>
+      </Stack>
       <Button mt="sm" type="submit">
         Submit
       </Button>
