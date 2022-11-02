@@ -11,13 +11,8 @@ export default async function handler(
     const { query } = req.body;
     const { data, error } = await supabase
       .from("user_uploads")
-      .select()
-      .textSearch("description", `'${query}'`, {
-        type: "websearch",
-        config: "english",
-      });
-    console.log(data);
-    console.log(error);
+      .select("*")
+      .textSearch("description", `'${query}'`);
     res.status(200).json({ result: data, error: error });
   } else {
     res.setHeader("Allow", ["POST"]);
