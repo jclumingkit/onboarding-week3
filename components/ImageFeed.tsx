@@ -4,14 +4,11 @@ import { SimpleGrid, Card, Image, Text } from "@mantine/core";
 
 import { TImage } from "../types/TProfile";
 
-const ImageFeed: FC<{ imageList: TImage[] }> = ({ imageList }) => {
+const ImageFeed: FC<{ imageList: TImage[] | null }> = ({ imageList }) => {
   return (
     <>
-      <Text align="center" weight={600} size="xl">
-        Your Feed
-      </Text>
       <SimpleGrid cols={4}>
-        {imageList.map((imageItem) => {
+        {imageList?.map((imageItem) => {
           return (
             <Card key={imageItem.id} shadow="sm" p="lg" radius="md" withBorder>
               <Card.Section>

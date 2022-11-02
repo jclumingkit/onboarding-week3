@@ -29,7 +29,7 @@ export default function App({
       initialSession={pageProps.initialSession}
     >
       <NotificationsProvider>
-        <AppShell padding="md" header={<Menu />}>
+        <AppShell padding="md" navbar={<Menu />}>
           {router.pathname.includes("/p/") ? (
             <AuthProvider>
               <Component {...pageProps} />

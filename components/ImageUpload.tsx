@@ -63,11 +63,11 @@ const ImageUpload: FC<{ user: User }> = ({ user }) => {
                   image_bucket_path: data.publicUrl,
                 };
 
-                const { data: error } = await axios.post(
+                const { data: clientSideError } = await axios.post(
                   "/api/user-upload",
                   finalImageData
                 );
-                setUploadError(error);
+                setUploadError(clientSideError);
               }
             },
           });
