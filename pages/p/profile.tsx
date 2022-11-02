@@ -11,13 +11,16 @@ import ImageUpload from "../../components/ImageUpload";
 import UserList from "../../components/UserList";
 import KeywordSearchImageUpload from "../../components/KeywordSearchImageUpload";
 
-import { Profile } from "../../types/TProfile";
+import { Profile, TImage, TApiCall } from "../../types/TProfile";
 import ImageFeed from "../../components/ImageFeed";
+import ApiCallTable from "../../components/ApiCallTable";
 
-const Profile: NextPage<{ user: User; profileList: Profile[] }> = ({
-  user,
-  profileList,
-}) => {
+const Profile: NextPage<{
+  user: User;
+  profileList: Profile[];
+  imageList: TImage[];
+  apiCallList: TApiCall[];
+}> = ({ user, profileList, imageList, apiCallList }) => {
   return (
     <Container>
       <Head key={"account-page"}>
@@ -32,6 +35,9 @@ const Profile: NextPage<{ user: User; profileList: Profile[] }> = ({
             <Tabs.Tab value="gallery" icon={<IconPhoto size={14} />}>
               Gallery
             </Tabs.Tab>
+            <Tabs.Tab value="apiCallsTable" icon={<IconSettings size={14} />}>
+              Api Calls
+            </Tabs.Tab>
             <Tabs.Tab value="peerReview" icon={<IconMessageCircle size={14} />}>
               Peer Review
             </Tabs.Tab>
@@ -43,7 +49,10 @@ const Profile: NextPage<{ user: User; profileList: Profile[] }> = ({
           <Tabs.Panel value="gallery" pt="xs">
             <ImageUpload user={user} />
             <Divider my="sm" />
-            <ImageFeed />
+            <ImageFeed imageList={imageList} />
+          </Tabs.Panel>
+          <Tabs.Panel value="apiCallsTable" pt="xs">
+            <ApiCallTable apiCallList={apiCallList} />
           </Tabs.Panel>
 
           <Tabs.Panel value="peerReview" pt="xs">
@@ -72,11 +81,26 @@ export const getServerSideProps = withPageAuth({
 
     const { data: user_profiles } = await supabase
       .from("user_profiles")
-      .select()
+      .select("*")
       .neq("id", user?.id);
 
+    const { data: user_uploads } = await supabase
+      .from("user_uploads")
+      .select("*")
+      .eq("user_id", user?.id);
+
+    const { data: api_call_table } = await supabase
+      .from("api_call_table")
+      .select("*")
+      .eq("called_by", user?.id);
+
     return {
-      props: { user: user, profileList: user_profiles },
+      props: {
+        user: user,
+        profileList: user_profiles,
+        imageList: user_uploads,
+        apiCallList: api_call_table,
+      },
     };
   },
 });

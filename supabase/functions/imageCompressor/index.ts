@@ -37,9 +37,7 @@ serve(async (req: Request) => {
       .upload(imageId, compressedImage, {
         contentType: "image/jpeg",
       });
-
     if (error) throw error;
-
     return new Response(JSON.stringify(data), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,

@@ -50,14 +50,22 @@ const ImageUpload: FC<{ user: User }> = ({ user }) => {
             quality: 0.5,
             mimeType: "image/jpeg",
             success: async (compressed) => {
-              const { data: image } = await supabase.storage
+              const { data: clientSideImage } = await supabase.storage
                 .from("images")
                 .upload(imagePath, compressed);
-              if (image?.path !== undefined) {
-                newImageUpload.image_bucket_path = image.path;
+              if (clientSideImage?.path !== undefined) {
+                const { data } = supabase.storage
+                  .from("images")
+                  .getPublicUrl(imagePath);
+
+                const finalImageData = {
+                  ...newImageUpload,
+                  image_bucket_path: data.publicUrl,
+                };
+
                 const { data: error } = await axios.post(
                   "/api/user-upload",
-                  newImageUpload
+                  finalImageData
                 );
                 setUploadError(error);
               }
@@ -66,14 +74,26 @@ const ImageUpload: FC<{ user: User }> = ({ user }) => {
           break;
 
         case "serverSideCompression":
-          const { data } = await supabase.functions.invoke("imageCompressor", {
-            body: values.image,
-          });
-          if (data?.path !== undefined) {
-            newImageUpload.image_bucket_path = data.path;
+          const { data: serverSideImage } = await supabase.functions.invoke(
+            "imageCompressor",
+            {
+              body: values.image,
+            }
+          );
+          console.log(serverSideImage);
+          if (serverSideImage?.path !== undefined) {
+            const { data } = supabase.storage
+              .from("images")
+              .getPublicUrl(serverSideImage?.path);
+
+            const finalImageData = {
+              ...newImageUpload,
+              image_bucket_path: data.publicUrl,
+            };
+
             const { data: error } = await axios.post(
               "/api/user-upload",
-              newImageUpload
+              finalImageData
             );
             setUploadError(error);
           }
@@ -81,15 +101,23 @@ const ImageUpload: FC<{ user: User }> = ({ user }) => {
 
         case "raw":
           try {
-            const { data } = await supabase.storage
+            const { data: notCompressedImage } = await supabase.storage
               .from("images")
               .upload(imagePath, values.image);
 
-            if (data?.path !== undefined) {
-              newImageUpload.image_bucket_path = data.path;
+            if (notCompressedImage?.path !== undefined) {
+              const { data } = supabase.storage
+                .from("images")
+                .getPublicUrl(imagePath);
+
+              const finalImageData = {
+                ...newImageUpload,
+                image_bucket_path: data.publicUrl,
+              };
+
               const { data: error } = await axios.post(
                 "/api/user-upload",
-                newImageUpload
+                finalImageData
               );
               setUploadError(error);
             }
