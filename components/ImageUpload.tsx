@@ -1,9 +1,7 @@
 import { FC, useState } from "react";
 import { useForm } from "@mantine/form";
 import {
-  Modal,
   Button,
-  Group,
   FileInput,
   NativeSelect,
   LoadingOverlay,
@@ -23,7 +21,6 @@ type FormData = {
 };
 
 const ImageUpload: FC<{ user: User }> = ({ user }) => {
-  const [opened, setOpened] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [uploadError, setUploadError] = useState(null);
   const supabase = useSupabaseClient();
@@ -123,51 +120,40 @@ const ImageUpload: FC<{ user: User }> = ({ user }) => {
 
   return (
     <>
-      <Modal
-        centered
-        opened={opened}
-        onClose={() => setOpened(false)}
-        title="Start a post"
-      >
-        <LoadingOverlay visible={isLoading} overlayBlur={1} />
-        <form onSubmit={form.onSubmit(handleImageUpload)}>
-          <FileInput
-            placeholder="avatar.jpg"
-            label="Your Avatar"
-            variant="filled"
-            withAsterisk
-            accept="image/*"
-            {...form.getInputProps("image")}
-          />
-          <Textarea
-            label="Image Caption"
-            {...form.getInputProps("description")}
-          />
-          <NativeSelect
-            data={[
-              {
-                value: "clientSideCompression",
-                label: "Client-Side Compression",
-              },
-              {
-                value: "serverSideCompression",
-                label: "Server-Side Compression",
-              },
-              { value: "raw", label: "Raw (No Compression)" },
-            ]}
-            label="Image Compression"
-            withAsterisk
-            {...form.getInputProps("compression")}
-          />
-          <Button mt="sm" type="submit">
-            Upload
-          </Button>
-        </form>
-      </Modal>
-
-      <Group position="center">
-        <Button onClick={() => setOpened(true)}>Start a post</Button>
-      </Group>
+      <LoadingOverlay visible={isLoading} overlayBlur={1} />
+      <form onSubmit={form.onSubmit(handleImageUpload)}>
+        <FileInput
+          placeholder="avatar.jpg"
+          label="Your Image"
+          variant="filled"
+          withAsterisk
+          accept="image/*"
+          {...form.getInputProps("image")}
+        />
+        <Textarea
+          label="Image Caption"
+          {...form.getInputProps("description")}
+        />
+        <NativeSelect
+          data={[
+            {
+              value: "clientSideCompression",
+              label: "Client-Side Compression",
+            },
+            {
+              value: "serverSideCompression",
+              label: "Server-Side Compression",
+            },
+            { value: "raw", label: "Raw (No Compression)" },
+          ]}
+          label="Image Compression"
+          withAsterisk
+          {...form.getInputProps("compression")}
+        />
+        <Button mt="sm" type="submit">
+          Upload
+        </Button>
+      </form>
     </>
   );
 };

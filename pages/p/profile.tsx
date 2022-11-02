@@ -1,7 +1,7 @@
 import { NextPage } from "next";
 import Head from "next/head";
 
-import { Container, Tabs } from "@mantine/core";
+import { Container, Tabs, Divider } from "@mantine/core";
 import { IconPhoto, IconMessageCircle, IconSettings } from "@tabler/icons";
 
 import { User } from "@supabase/supabase-js";
@@ -12,6 +12,7 @@ import UserList from "../../components/UserList";
 import KeywordSearchImageUpload from "../../components/KeywordSearchImageUpload";
 
 import { Profile } from "../../types/TProfile";
+import ImageFeed from "../../components/ImageFeed";
 
 const Profile: NextPage<{ user: User; profileList: Profile[] }> = ({
   user,
@@ -41,6 +42,8 @@ const Profile: NextPage<{ user: User; profileList: Profile[] }> = ({
 
           <Tabs.Panel value="gallery" pt="xs">
             <ImageUpload user={user} />
+            <Divider my="sm" />
+            <ImageFeed />
           </Tabs.Panel>
 
           <Tabs.Panel value="peerReview" pt="xs">
