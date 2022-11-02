@@ -1,7 +1,19 @@
 import { Container } from "@mantine/core";
 import Head from "next/head";
 
+import { useUser } from "@supabase/auth-helpers-react";
+import { setCookie } from "cookies-next";
+import { useEffect } from "react";
+
 export default function Home() {
+  const user = useUser();
+
+  useEffect(() => {
+    if (user) {
+      setCookie("current_user", user.id);
+    }
+  }, [user]);
+
   return (
     <Container>
       <Head key={"account-page"}>

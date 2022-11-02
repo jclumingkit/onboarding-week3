@@ -30,7 +30,7 @@ const Profile: NextPage<{
         <Tabs defaultValue="gallery">
           <Tabs.List>
             <Tabs.Tab value="gallery" icon={<IconPhoto size={14} />}>
-              Gallery
+              Upload Photo
             </Tabs.Tab>
             <Tabs.Tab value="apiCallsTable" icon={<IconSettings size={14} />}>
               Api Calls
