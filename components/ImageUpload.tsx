@@ -96,6 +96,12 @@ const ImageUpload: FC<{ user: User }> = ({ user }) => {
               finalImageData
             );
             setUploadError(error);
+          } else {
+            showNotification({
+              title: "Upload error",
+              message: "Please try again later.",
+              color: "red",
+            });
           }
           break;
 
@@ -133,7 +139,7 @@ const ImageUpload: FC<{ user: User }> = ({ user }) => {
 
     setIsLoading(false);
 
-    !uploadError
+    !uploadError || uploadError !== null
       ? showNotification({
           title: "Upload successful",
           message: "Your post has been saved.",
