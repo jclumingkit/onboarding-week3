@@ -75,20 +75,20 @@ const ImageUpload: FC<{ user: User }> = ({ user }) => {
 
         case "serverSideCompression":
           const { data: serverSideImage } = await supabase.functions.invoke(
-            "imageCompressor",
+            "imageCompressor2",
             {
               body: values.image,
             }
           );
-          console.log(serverSideImage);
-          if (serverSideImage?.path !== undefined) {
-            const { data } = supabase.storage
+          console.log(serverSideImage?.data.path);
+          if (serverSideImage?.data.path !== undefined) {
+            const { data: bucketImage } = supabase.storage
               .from("images")
-              .getPublicUrl(serverSideImage?.path);
-
+              .getPublicUrl(serverSideImage?.data.path);
+            console.log(bucketImage);
             const finalImageData = {
               ...newImageUpload,
-              image_bucket_path: data.publicUrl,
+              image_bucket_path: bucketImage.publicUrl,
             };
 
             const { data: error } = await axios.post(
