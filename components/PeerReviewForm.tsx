@@ -80,94 +80,102 @@ const PeerReviewForm: FC<{ userId: string; username: string }> = ({
   ];
 
   return (
-    <form onSubmit={form.onSubmit(handlePeerReview)}>
-      <TextInput
-        withAsterisk
-        label="Name"
-        {...form.getInputProps("name")}
-        readOnly
-      />
-      <Stack>
-        <Text align="center" weight={600} mt="md">
-          Presentation
-        </Text>
-        <Slider
-          marks={marks}
-          max={5}
-          min={0}
-          mb="md"
-          {...form.getInputProps("required_rating.presentation_score.score")}
-        />
+    <>
+      <form onSubmit={form.onSubmit(handlePeerReview)}>
         <TextInput
           withAsterisk
-          label="Comment"
-          {...form.getInputProps("required_rating.presentation_score.comment")}
+          label="Name"
+          {...form.getInputProps("name")}
+          readOnly
         />
-      </Stack>
-      <Stack>
-        <Text align="center" weight={600} mt="md">
-          Technical
-        </Text>
-        <Slider
-          marks={marks}
-          max={5}
-          min={0}
-          mb="md"
-          {...form.getInputProps("required_rating.technical_score.score")}
-        />
-        <TextInput
-          withAsterisk
-          label="Comment"
-          {...form.getInputProps("required_rating.technical_score.comment")}
-        />
-      </Stack>
-      <Stack>
-        <Text align="center" weight={600} mt="md">
-          Assists Peers
-        </Text>
-        <Slider
-          marks={marks}
-          max={5}
-          min={0}
-          mb="md"
-          {...form.getInputProps("required_rating.assists_peers_score.score")}
-        />
-        <TextInput
-          withAsterisk
-          label="Comment"
-          {...form.getInputProps("required_rating.assists_peers_score.comment")}
-        />
-      </Stack>
-      <Stack>
-        <Text align="center" weight={600} mt="md">
-          Documentation
-        </Text>
-        <Slider
-          marks={marks}
-          max={5}
-          min={0}
-          mb="md"
-          {...form.getInputProps("required_rating.documentation_score.score")}
-        />
-        <TextInput
-          withAsterisk
-          label="Comment"
-          {...form.getInputProps("required_rating.documentation_score.comment")}
-        />
-      </Stack>
-      <Stack>
-        <Text align="center" weight={600} mt="md">
-          Additional Feedback
-          <TextInput
-            label="Comment"
-            {...form.getInputProps("optional_rating.stood_out")}
+        <Stack>
+          <Text align="center" weight={600} mt="md">
+            Presentation Score
+          </Text>
+          <Slider
+            marks={marks}
+            max={5}
+            min={0}
+            mb="md"
+            {...form.getInputProps("required_rating.presentation_score.score")}
           />
-        </Text>
-      </Stack>
-      <Button mt="sm" type="submit">
-        Submit
-      </Button>
-    </form>
+          <TextInput
+            withAsterisk
+            label="Comment"
+            {...form.getInputProps(
+              "required_rating.presentation_score.comment"
+            )}
+          />
+        </Stack>
+        <Stack>
+          <Text align="center" weight={600} mt="md">
+            Technical Score
+          </Text>
+          <Slider
+            marks={marks}
+            max={5}
+            min={0}
+            mb="md"
+            {...form.getInputProps("required_rating.technical_score.score")}
+          />
+          <TextInput
+            withAsterisk
+            label="Comment"
+            {...form.getInputProps("required_rating.technical_score.comment")}
+          />
+        </Stack>
+        <Stack>
+          <Text align="center" weight={600} mt="md">
+            Assists Peers Score
+          </Text>
+          <Slider
+            marks={marks}
+            max={5}
+            min={0}
+            mb="md"
+            {...form.getInputProps("required_rating.assists_peers_score.score")}
+          />
+          <TextInput
+            withAsterisk
+            label="Comment"
+            {...form.getInputProps(
+              "required_rating.assists_peers_score.comment"
+            )}
+          />
+        </Stack>
+        <Stack>
+          <Text align="center" weight={600} mt="md">
+            Documentation Score
+          </Text>
+          <Slider
+            marks={marks}
+            max={5}
+            min={0}
+            mb="md"
+            {...form.getInputProps("required_rating.documentation_score.score")}
+          />
+          <TextInput
+            withAsterisk
+            label="Comment"
+            {...form.getInputProps(
+              "required_rating.documentation_score.comment"
+            )}
+          />
+        </Stack>
+        <Stack>
+          <Text align="center" weight={600} mt="md">
+            Additional Feedback
+            <TextInput
+              label="Comment"
+              {...form.getInputProps("optional_rating.stood_out")}
+            />
+          </Text>
+        </Stack>
+        <Button fullWidth mt="sm" type="submit">
+          Submit
+        </Button>
+      </form>
+    </>
   );
 };
 
