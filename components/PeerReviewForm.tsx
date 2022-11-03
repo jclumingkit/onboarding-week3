@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { useForm } from "@mantine/form";
-import { Button, TextInput, Text, NumberInput, Stack } from "@mantine/core";
+import { Button, TextInput, Text, Stack, Slider } from "@mantine/core";
 
 import axios from "axios";
 import { showNotification } from "@mantine/notifications";
@@ -71,6 +71,14 @@ const PeerReviewForm: FC<{ userId: string; username: string }> = ({
     }
   };
 
+  const marks = [
+    { value: 5, label: "5" },
+    { value: 4, label: "4" },
+    { value: 3, label: "3" },
+    { value: 2, label: "2" },
+    { value: 1, label: "1" },
+  ];
+
   return (
     <form onSubmit={form.onSubmit(handlePeerReview)}>
       <TextInput
@@ -83,12 +91,11 @@ const PeerReviewForm: FC<{ userId: string; username: string }> = ({
         <Text align="center" weight={600} mt="md">
           Presentation
         </Text>
-        <NumberInput
-          withAsterisk
-          label="Score"
-          defaultValue={0}
-          min={0}
+        <Slider
+          marks={marks}
           max={5}
+          min={0}
+          mb="md"
           {...form.getInputProps("required_rating.presentation_score.score")}
         />
         <TextInput
@@ -101,12 +108,11 @@ const PeerReviewForm: FC<{ userId: string; username: string }> = ({
         <Text align="center" weight={600} mt="md">
           Technical
         </Text>
-        <NumberInput
-          withAsterisk
-          label="Score"
-          defaultValue={0}
-          min={0}
+        <Slider
+          marks={marks}
           max={5}
+          min={0}
+          mb="md"
           {...form.getInputProps("required_rating.technical_score.score")}
         />
         <TextInput
@@ -119,12 +125,11 @@ const PeerReviewForm: FC<{ userId: string; username: string }> = ({
         <Text align="center" weight={600} mt="md">
           Assists Peers
         </Text>
-        <NumberInput
-          withAsterisk
-          label="Score"
-          defaultValue={0}
-          min={0}
+        <Slider
+          marks={marks}
           max={5}
+          min={0}
+          mb="md"
           {...form.getInputProps("required_rating.assists_peers_score.score")}
         />
         <TextInput
@@ -137,12 +142,11 @@ const PeerReviewForm: FC<{ userId: string; username: string }> = ({
         <Text align="center" weight={600} mt="md">
           Documentation
         </Text>
-        <NumberInput
-          withAsterisk
-          label="Score"
-          defaultValue={0}
-          min={0}
+        <Slider
+          marks={marks}
           max={5}
+          min={0}
+          mb="md"
           {...form.getInputProps("required_rating.documentation_score.score")}
         />
         <TextInput
