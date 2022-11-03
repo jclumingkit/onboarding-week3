@@ -13,6 +13,7 @@ import KeywordSearchImageUpload from "../../components/KeywordSearchImageUpload"
 import ApiCallTable from "../../components/ApiCallTable";
 
 import { Profile } from "../../types/TProfile";
+import KeywordSearchPeerReview from "../../components/KeywordSearchPeerReview";
 
 const Profile: NextPage<{
   user: User;
@@ -56,6 +57,7 @@ const Profile: NextPage<{
 
           <Tabs.Panel value="keywordAnalysis" pt="xs">
             <KeywordSearchImageUpload userId={user.id} />
+            <KeywordSearchPeerReview userId={user.id} />
           </Tabs.Panel>
         </Tabs>
       </main>
