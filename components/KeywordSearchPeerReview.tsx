@@ -1,13 +1,24 @@
-import { FC } from "react";
-import { Stack, Group, Button, TextInput, Text } from "@mantine/core";
+import { FC, useState } from "react";
+import {
+  Stack,
+  Group,
+  Button,
+  TextInput,
+  Text,
+  Code,
+  Card,
+} from "@mantine/core";
 import { useForm } from "@mantine/form";
-// import { useSupabaseClient } from "@supabase/auth-helpers-react";
-// import { Analysis } from "../types/TKeywordSearch";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
+
 import axios from "axios";
+import { Database } from "../types/supabase";
 
 const KeywordSearchPeerReview: FC<{ userId: string }> = ({ userId }) => {
-  //const supabase = useSupabaseClient();
-  //const [latestAnalysis, setLatestAnalysis] = useState<Analysis | null>(null);
+  const supabase = useSupabaseClient<Database>();
+  const [latestAnalysis, setLatestAnalysis] = useState<
+    Database["public"]["Tables"]["peer_reviews"]["Row"][] | null
+  >(null);
 
   const form = useForm({
     initialValues: {
@@ -21,19 +32,20 @@ const KeywordSearchPeerReview: FC<{ userId: string }> = ({ userId }) => {
   const handleSearch = async (values: { query: string }) => {
     const {
       data: { result },
-    } = await axios.post("/api/keyword-search-peer-review", {
+    } = await axios.post("/api/keyword-jsonb-ilike", {
       query: values.query,
     });
 
     console.log(result);
-
+    console.log(userId);
+    console.log(supabase);
     if (result.length > 0) {
-      console.log(result);
-      console.log(userId);
+      setLatestAnalysis(result);
+      console.log(result.length);
       // const newAnalysis = {
       //   keyword: values.query,
       //   keyword_count: keyword_count,
-      //   number_of_sets: number_of_sets,
+      //   number_of_sets: result.length,
       //   run_by: userId,
       // };
 
@@ -69,54 +81,18 @@ const KeywordSearchPeerReview: FC<{ userId: string }> = ({ userId }) => {
           <Button type="submit">Submit</Button>
         </Group>
       </form>
-      {/* {!latestAnalysis && (
+      {!latestAnalysis && (
         <Card shadow="sm" p="lg" radius="md" withBorder>
           <Text>No results</Text>
         </Card>
       )}
       {latestAnalysis && (
-        <Group position="center" m="md">
-          <Card shadow="sm" p="lg" radius="md" withBorder>
-            <Text align="center" style={{ fontSize: "20px" }}>
-              Keyword
-            </Text>
-            <Text
-              align="center"
-              weight={700}
-              style={{ fontSize: "32px" }}
-              color="green"
-            >
-              &quot;{latestAnalysis.keyword}&quot;
-            </Text>
-          </Card>
-          <Card shadow="sm" p="lg" radius="md" withBorder>
-            <Text align="center" style={{ fontSize: "20px" }}>
-              Number of Sets
-            </Text>
-            <Text
-              align="center"
-              weight={700}
-              style={{ fontSize: "32px" }}
-              color="yellow"
-            >
-              {latestAnalysis.number_of_sets}
-            </Text>
-          </Card>
-          <Card shadow="sm" p="lg" radius="md" withBorder>
-            <Text align="center" style={{ fontSize: "20px" }}>
-              Total Keyword Count:
-            </Text>
-            <Text
-              align="center"
-              weight={700}
-              style={{ fontSize: "32px" }}
-              color="blue"
-            >
-              {latestAnalysis.keyword_count}
-            </Text>
-          </Card>
-        </Group>
-      )} */}
+        <Code block={true}>
+          {latestAnalysis.map(
+            (analysis) => `${JSON.stringify(analysis, null, 2)}, \n`
+          )}
+        </Code>
+      )}
     </Stack>
   );
 };
