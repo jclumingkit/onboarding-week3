@@ -11,21 +11,21 @@ const nextConfig = {
       },
     ],
   },
-  async headers() {
-    return [
-      {
-        source: "/:path*",
-        headers: [
-          { key: "Access-Control-Allow-Origin", value: "*" },
-          {
-            key: "Access-Control-Allow-Headers",
-            value:
-              "Authorization, x-client-info, apikey, content-type, content-length, accept",
-          },
-        ],
-      },
-    ];
-  },
+  // async headers() {
+  //   return [
+  //     {
+  //       source: "/:path*",
+  //       headers: [
+  //         { key: "Access-Control-Allow-Origin", value: "*" },
+  //         {
+  //           key: "Access-Control-Allow-Headers",
+  //           value:
+  //             "Authorization, x-client-info, apikey, content-type, content-length, accept",
+  //         },
+  //       ],
+  //     },
+  //   ];
+  // },
   // async rewrites() {
   //   return [
   //     {
