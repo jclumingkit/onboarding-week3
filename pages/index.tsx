@@ -5,6 +5,8 @@ import { useUser } from "@supabase/auth-helpers-react";
 import { setCookie } from "cookies-next";
 import { useEffect } from "react";
 
+import FacebookMessengerPlugin from "../components/FacebookMessengerPlugin";
+
 export default function Home() {
   const user = useUser();
 
@@ -26,7 +28,9 @@ export default function Home() {
         <h1>Onboarding Week 3</h1>
       </main>
 
-      <footer></footer>
+      <footer>
+        <FacebookMessengerPlugin />
+      </footer>
     </Container>
   );
 }

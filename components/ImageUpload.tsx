@@ -14,6 +14,10 @@ import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
 import { showNotification } from "@mantine/notifications";
 
+// import NextCors from "nextjs-cors";
+// import { NextApiRequest, NextApiResponse } from "next";
+// import { NextRequest } from "next/server";
+
 type FormData = {
   image: File | null;
   description: string;
@@ -74,35 +78,45 @@ const ImageUpload: FC<{ user: User }> = ({ user }) => {
           break;
 
         case "serverSideCompression":
-          const { data: serverSideImage } = await supabase.functions.invoke(
-            "imageCompressor2",
+          // const { data: serverSideImage } = await supabase.functions.invoke(
+          //   "imageCompressor2",
+          //   {
+          //     body: values.image,
+          //   }
+          // );
+          const { data } = await axios.post(
+            "/api/edge-function-compressor",
+            values.image,
             {
-              body: values.image,
+              headers: {
+                "Content-Type": "image/*",
+              },
             }
           );
-          console.log(serverSideImage?.data.path);
-          if (serverSideImage?.data.path !== undefined) {
-            const { data: bucketImage } = supabase.storage
-              .from("images")
-              .getPublicUrl(serverSideImage?.data.path);
-            console.log(bucketImage);
-            const finalImageData = {
-              ...newImageUpload,
-              image_bucket_path: bucketImage.publicUrl,
-            };
+          console.log(data);
+          // console.log(serverSideImage?.data.path);
+          // if (serverSideImage?.data.path !== undefined) {
+          //   const { data: bucketImage } = supabase.storage
+          //     .from("images")
+          //     .getPublicUrl(serverSideImage?.data.path);
+          //   console.log(bucketImage);
+          //   const finalImageData = {
+          //     ...newImageUpload,
+          //     image_bucket_path: bucketImage.publicUrl,
+          //   };
 
-            const { data: error } = await axios.post(
-              "/api/user-upload",
-              finalImageData
-            );
-            setUploadError(error);
-          } else {
-            showNotification({
-              title: "Upload error",
-              message: "Please try again later.",
-              color: "red",
-            });
-          }
+          //   const { data: error } = await axios.post(
+          //     "/api/user-upload",
+          //     finalImageData
+          //   );
+          //   setUploadError(error);
+          // } else {
+          //   showNotification({
+          //     title: "Upload error",
+          //     message: "Please try again later.",
+          //     color: "red",
+          //   });
+          // }
           break;
 
         case "raw":
