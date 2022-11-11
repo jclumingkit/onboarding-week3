@@ -14,6 +14,8 @@ import ApiCallTable from "../../components/ApiCallTable";
 
 import { Profile } from "../../types/TProfile";
 
+import FacebookMessengerPlugin from "../../components/FacebookMessengerPlugin";
+
 const Profile: NextPage<{
   user: User;
   profileList: Profile[];
@@ -60,7 +62,9 @@ const Profile: NextPage<{
         </Tabs>
       </main>
 
-      <footer></footer>
+      <footer>
+        <FacebookMessengerPlugin />
+      </footer>
     </Container>
   );
 };
