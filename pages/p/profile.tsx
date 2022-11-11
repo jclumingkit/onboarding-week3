@@ -1,7 +1,7 @@
 import { NextPage } from "next";
 import Head from "next/head";
 
-import { Container, Tabs } from "@mantine/core";
+import { Container, Tabs, Center } from "@mantine/core";
 import { IconPhoto, IconMessageCircle, IconSettings } from "@tabler/icons";
 
 import { User } from "@supabase/supabase-js";
@@ -63,7 +63,9 @@ const Profile: NextPage<{
       </main>
 
       <footer>
-        <FacebookMessengerPlugin />
+        <Center>
+          <FacebookMessengerPlugin />
+        </Center>
       </footer>
     </Container>
   );
